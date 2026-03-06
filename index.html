@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple CRM</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="panel">
+      <header class="panel__header">
+        <h1>Contacts</h1>
+        <p>Manage your customer list locally in Chrome.</p>
+      </header>
+      <div class="panel__controls">
+        <div class="control-group">
+          <label for="search">Search</label>
+          <input id="search" type="text" placeholder="Search by name or company" />
+        </div>
+        <button id="clear-storage" class="ghost-btn">Reset storage</button>
+      </div>
+      <div class="contacts" id="contactsContainer"></div>
+    </section>
+    <section class="panel panel--form">
+      <header class="panel__header">
+        <h2 id="formTitle">Add contact</h2>
+      </header>
+      <form id="contactForm" class="form" autocomplete="off">
+        <label>
+          <span>Name</span>
+          <input name="name" required />
+        </label>
+        <label>
+          <span>Email</span>
+          <input name="email" type="email" required />
+        </label>
+        <label>
+          <span>Phone</span>
+          <input name="phone" type="tel" />
+        </label>
+        <label>
+          <span>Company</span>
+          <input name="company" />
+        </label>
+        <div class="form__actions">
+          <button type="submit" id="submitButton">Save contact</button>
+          <button type="button" id="cancelEdit" class="ghost-btn" hidden>Cancel edit</button>
+        </div>
+      </form>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
