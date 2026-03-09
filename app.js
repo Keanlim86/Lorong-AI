@@ -60,6 +60,19 @@ function startEdit(id) {
   form.elements.name.focus();
 }
 
+function addEngagementLog(id, text) {
+  const contacts = getContacts();
+  const updated = contacts.map((entry) => {
+    if (entry.id === id) {
+      const logs = entry.logs || [];
+      return { ...entry, logs: [...logs, { date: new Date().toISOString(), text }] };
+    }
+    return entry;
+  });
+  persistContacts(updated);
+  renderContacts(searchInput.value);
+}
+
 function removeContact(id) {
   const contacts = getContacts();
   const filtered = contacts.filter((entry) => entry.id !== id);
@@ -93,6 +106,37 @@ function createContactCard(contact) {
   phone.textContent = contact.phone || 'No phone';
   meta.appendChild(phone);
 
+  const logsContainer = document.createElement('div');
+  logsContainer.style.marginTop = '10px';
+  logsContainer.style.borderTop = '1px solid rgba(0,0,0,0.1)';
+  logsContainer.style.paddingTop = '5px';
+
+  if (contact.logs && contact.logs.length) {
+    contact.logs.forEach((log) => {
+      const p = document.createElement('p');
+      p.style.fontSize = '0.85rem';
+      p.style.margin = '0.25rem 0';
+      const date = document.createElement('strong');
+      date.textContent = new Date(log.date).toLocaleDateString();
+      p.appendChild(date);
+      p.appendChild(document.createTextNode(': ' + log.text));
+      logsContainer.appendChild(p);
+    });
+  }
+
+  const logInput = document.createElement('input');
+  logInput.placeholder = 'Add log...';
+  logInput.style.width = '100%';
+  logInput.style.marginTop = '0.5rem';
+  logInput.style.boxSizing = 'border-box';
+  logInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const text = e.target.value.trim();
+      if (text) addEngagementLog(contact.id, text);
+    }
+  });
+  logsContainer.appendChild(logInput);
+
   const actions = document.createElement('div');
   actions.className = 'actions';
 
@@ -112,6 +156,7 @@ function createContactCard(contact) {
   actions.appendChild(del);
 
   card.appendChild(meta);
+  card.appendChild(logsContainer);
   card.appendChild(actions);
   return card;
 }
@@ -157,12 +202,22 @@ function handleFormSubmit(event) {
   }
 
   const contacts = getContacts();
+
+  let logs = [];
+  if (editingId) {
+    const existing = contacts.find((entry) => entry.id === editingId);
+    if (existing && existing.logs) {
+      logs = existing.logs;
+    }
+  }
+
   const payload = {
     id: editingId || Date.now().toString(),
     name,
     email,
     phone,
     company,
+    logs,
   };
 
   const next = editingId
