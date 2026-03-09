@@ -56,6 +56,7 @@ function startEdit(id) {
   form.elements.email.value = contact.email;
   form.elements.phone.value = contact.phone;
   form.elements.company.value = contact.company;
+  form.elements.logEntry.value = '';
   updateFormState();
   form.elements.name.focus();
 }
@@ -111,6 +112,12 @@ function createContactCard(contact) {
   logsContainer.style.borderTop = '1px solid rgba(0,0,0,0.1)';
   logsContainer.style.paddingTop = '5px';
 
+  const logsHeader = document.createElement('h4');
+  logsHeader.textContent = 'Engagement Logs';
+  logsHeader.style.margin = '0.5rem 0';
+  logsHeader.style.fontSize = '0.9rem';
+  logsContainer.appendChild(logsHeader);
+
   if (contact.logs && contact.logs.length) {
     contact.logs.forEach((log) => {
       const p = document.createElement('p');
@@ -125,9 +132,12 @@ function createContactCard(contact) {
   }
 
   const logInput = document.createElement('input');
-  logInput.placeholder = 'Add log...';
+  logInput.placeholder = 'Add log (press Enter)...';
   logInput.style.width = '100%';
   logInput.style.marginTop = '0.5rem';
+  logInput.style.padding = '5px';
+  logInput.style.border = '1px solid #ccc';
+  logInput.style.borderRadius = '4px';
   logInput.style.boxSizing = 'border-box';
   logInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -197,6 +207,7 @@ function handleFormSubmit(event) {
   const email = form.elements.email.value.trim();
   const phone = form.elements.phone.value.trim();
   const company = form.elements.company.value.trim();
+  const logEntry = form.elements.logEntry.value.trim();
   if (!name || !email) {
     return;
   }
@@ -209,6 +220,10 @@ function handleFormSubmit(event) {
     if (existing && existing.logs) {
       logs = existing.logs;
     }
+  }
+
+  if (logEntry) {
+    logs = [...logs, { date: new Date().toISOString(), text: logEntry }];
   }
 
   const payload = {
